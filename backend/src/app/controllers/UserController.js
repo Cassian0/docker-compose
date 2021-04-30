@@ -90,6 +90,19 @@ class UserController {
       phone,
     });
   }
+
+  async index(req, res) {
+    const users = await User.findAll();
+
+    return res.json(users);
+  }
+
+  async delete(req, res) {
+    const user = await User.findOne({ where: req.params });
+    user.destroy();
+
+    return res.json(user);
+  }
 }
 
 export default new UserController();
