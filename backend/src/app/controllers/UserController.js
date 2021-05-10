@@ -1,6 +1,7 @@
 import * as Yup from 'yup';
 
 import User from '../models/User';
+import File from '../models/File';
 
 class UserController {
   async store(req, res) {
@@ -34,13 +35,13 @@ class UserController {
   }
 
   async update(req, res) {
-    const phoneRegex = /^\(\d{2}\) \d{4,5}-\d{4}$/gi;
+    // const phoneRegex = /^\(\d{2}\) \d{4,5}-\d{4}$/gi;
     const schema = Yup.object().shape({
       name: Yup.string(),
       email: Yup.string().email(),
-      oldPhone: Yup.string().matches(phoneRegex),
+      oldPhone: Yup.string().matches(/^\(\d{2}\) \d{4,5}-\d{4}$/gi),
       phone: Yup.string().when('oldPhone', (oldPhone, field) =>
-        oldPhone ? field.required().oneOf([Yup.ref('oldPhone')]) : field
+        oldPhone ? field.required() : field
       ),
       oldPassword: Yup.string().min(6),
       password: Yup.string()
@@ -92,7 +93,15 @@ class UserController {
   }
 
   async index(req, res) {
-    const users = await User.findAll();
+    const users = await User.findAll({
+      include: [
+        {
+          model: File,
+          as: 'avatar',
+          attributes: ['name', 'path', 'url'],
+        },
+      ],
+    });
 
     return res.json(users);
   }
@@ -101,7 +110,7 @@ class UserController {
     const user = await User.findOne({ where: req.params });
     user.destroy();
 
-    return res.json(user);
+    return res.status(200).json({ message: 'Usuário deletado' });
   }
 }
 
