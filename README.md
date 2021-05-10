@@ -20,7 +20,6 @@ ou
 ```
 docker --help
 ```
-para verificar se o docker está instalado.
 
 * Para maiores informações acesse : [Docker](https://www.docker.com/)
 * Ao clonar a aplicação na home execute:
